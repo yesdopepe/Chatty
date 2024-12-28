@@ -60,12 +60,17 @@ export default function LoginScreen() {
       setLoading(true);
       await signIn(email, password);
       router.replace("/(app)/chats");
-    } catch (error: any) {
+    } catch (error) {
       toast.show({
         placement: "top",
         render: ({ id }) => (
           <Toast nativeID={id} action="error" variant="solid">
-            <ToastTitle>Login failed: {error.message}</ToastTitle>
+            <VStack space="xs">
+              <ToastTitle>Login failed</ToastTitle>
+              <Text size="sm" className="text-red-500">
+                {error as string}
+              </Text>
+            </VStack>
           </Toast>
         ),
       });

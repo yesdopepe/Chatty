@@ -1,5 +1,7 @@
-import { create } from 'zustand';
-import * as SecureStore from 'expo-secure-store';
+import { create } from "zustand";
+import * as SecureStore from "expo-secure-store";
+import axios, { AxiosError } from "axios";
+import Constants from "expo-constants";
 
 interface User {
   id: string;
@@ -9,65 +11,101 @@ interface User {
 
 interface AuthState {
   user: User | null;
-  token: string | null;
+  access_token: string | null;
   isLoading: boolean;
   setToken: (token: string | null) => void;
   signIn: (email: string, password: string) => Promise<void>;
-  signUp: (email: string, password: string, username: string) => Promise<void>;
+  signUp: (
+    email: string,
+    password: string,
+    username: string
+  ) => Promise<{ user: User; access_token: string }>;
   signOut: () => Promise<void>;
 }
 
+const API_URL = Constants.expoConfig?.extra?.API_URL;
+
+if (!API_URL) {
+  console.error(
+    "API_URL is not configured. Please check your environment variables."
+  );
+}
+
+// Add base URL to axios
+axios.defaults.baseURL = API_URL;
+
 export const useAuthStore = create<AuthState>((set) => ({
   user: null,
-  token: null,
+  access_token: null,
   isLoading: false,
 
-  setToken: (token: string | null) => {
-    set({ token });
-    if (token) {
+  setToken: (access_token: string | null) => {
+    set({ access_token });
+    if (access_token) {
+      axios.defaults.headers.common["Authorization"] = `Bearer ${access_token}`;
       // TODO: Fetch user data from API using token
-      set({ 
-        user: { 
-          id: '1', 
-          email: 'user@example.com', 
-          username: 'testuser' 
-        } 
-      });
     }
   },
 
   signIn: async (email: string, password: string) => {
     try {
-      // TODO: Implement actual API call
-      const mockResponse = {
-        user: { id: '1', email, username: 'testuser' },
-        token: 'mock-token'
-      };
+      const response = await axios.post("/auth/login", {
+        email,
+        password,
+      });
 
-      await SecureStore.setItemAsync('token', mockResponse.token);
-      set({ user: mockResponse.user, token: mockResponse.token });
+      const { user, access_token } = response.data;
+      await SecureStore.setItemAsync("token", access_token);
+      axios.defaults.headers.common["Authorization"] = `Bearer ${access_token}`;
+      set({ user, access_token });
     } catch (error) {
-      throw error;
+      if (error instanceof AxiosError) {
+        const message = error.response?.data?.message || error.message;
+        throw typeof message === "string" ? message : "Failed to sign in";
+      }
+      throw "An unexpected error occurred";
     }
   },
 
   signUp: async (email: string, password: string, username: string) => {
     try {
-      // TODO: Implement actual API call
-      const mockResponse = {
-        user: { id: '1', email, username },
-        token: 'mock-token'
-      };
+      const response = await axios.post("/auth/register", {
+        email,
+        password,
+        username,
+      });
 
-      await SecureStore.setItemAsync('token', mockResponse.token);
-      set({ user: mockResponse.user, token: mockResponse.token });
+      const { user, access_token } = response.data;
+
+      if (!access_token || !user) {
+        throw new Error("Invalid response from server");
+      }
+
+      await SecureStore.setItemAsync("token", access_token);
+      axios.defaults.headers.common["Authorization"] = `Bearer ${access_token}`;
+      set({ user, access_token });
+      return { user, access_token };
     } catch (error) {
-      throw error;
+      if (error instanceof AxiosError) {
+        const message = error.response?.data?.message || error.message;
+        throw typeof message === "string" ? message : "Failed to sign up";
+      }
+      throw "An unexpected error occurred";
     }
   },
 
   signOut: async () => {
-    await SecureStore.deleteItemAsync('token');
-    set({ user: null, token: null });
+    try {
+      await axios.post("/auth/logout");
+      await SecureStore.deleteItemAsync("token");
+      delete axios.defaults.headers.common["Authorization"];
+      set({ user: null, access_token: null });
+    } catch (error) {
+      // Even if logout fails on server, clear local state
+      await SecureStore.deleteItemAsync("token");
+      delete axios.defaults.headers.common["Authorization"];
+      set({ user: null, access_token: null });
+      throw "Failed to logout properly";
+    }
   },
 }));

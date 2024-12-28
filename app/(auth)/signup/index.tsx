@@ -90,12 +90,17 @@ export default function SignUpScreen() {
       setLoading(true);
       await signUp(formData.email, formData.password, formData.username);
       router.replace("/(app)/chats");
-    } catch (error: any) {
+    } catch (error) {
       toast.show({
         placement: "top",
         render: ({ id }) => (
           <Toast nativeID={id} action="error" variant="solid">
-            <ToastTitle>Registration failed: {error.message}</ToastTitle>
+            <VStack space="xs">
+              <ToastTitle>Registration failed</ToastTitle>
+              <Text size="sm" className="text-red-500">
+                {error as string}
+              </Text>
+            </VStack>
           </Toast>
         ),
       });
