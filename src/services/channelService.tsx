@@ -4,7 +4,6 @@ export const getChannel = async (id: string) => {
   const { data } = await axiosWithAuth.get(`/channels/${id}`);
 
   const participants: string[] = [];
-  console.log(data);
   if (data.name) {
     await data.participants.forEach((participant: User) => {
       participants.push(participant.id);
@@ -19,24 +18,20 @@ export const getChannel = async (id: string) => {
 
 export const getChannelsByUser = async (id: string) => {
   const { data } = await axiosWithAuth.get(`/channels/user/${id}`);
-  console.log(data);
   return data;
 };
 
 export const createChannel = async (channel: any) => {
   const { data } = await axiosWithAuth.post("/channels", channel);
-  console.log(data);
   return data;
 };
 
 export const updateChannel = async (id: string, channel: any) => {
   const { data } = await axiosWithAuth.put(`/channels/${id}`, channel);
-  console.log(data);
   return data;
 };
 
 export const deleteChannel = async (id: string) => {
   const { data } = await axiosWithAuth.delete(`/channels/${id}`);
-  console.log(data);
   return data;
 };

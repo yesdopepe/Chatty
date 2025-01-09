@@ -12,7 +12,6 @@ export const createAccount = async ({
       username,
       password,
     });
-    console.log(data);
     return data;
   } catch {
     return { statusCode: "409", message: "User already exists." };
@@ -25,7 +24,6 @@ export const logIn = async ({ email, password }: signFormType) => {
       email,
       password,
     });
-    console.log(data);
     return data;
   } catch {
     return { statusCode: "401", message: "Wrong email or password." };

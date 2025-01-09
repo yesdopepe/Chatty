@@ -25,9 +25,9 @@ const ChannelForm = () => {
 
     var secureUrl = NO_AVATAR_CHANNEL;
 
-    if (e.target.image.files.length === 1) {
-      console.log(e.target.image.files);
-      secureUrl = await uploadUserImage(e.target.image.files[0]);
+    if (e.target.image.files.length > 0) {
+      const file = e.target.image.files[0];
+      secureUrl = await uploadUserImage(file);
     }
     if (participants.length < 2) {
       return toast.error("Group channels have atleast 3 participants", {
