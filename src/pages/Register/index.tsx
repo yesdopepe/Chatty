@@ -16,7 +16,7 @@ const Register = () => {
         {isFormOpen ? (
           <>
             <LazyLoadImage
-              className="w-[80%] mx-auto border-b border-neutral-700 hidden sm:block"
+              className="w-[50%] h-[40%] mx-auto border-b border-neutral-700 hidden sm:block"
               src={Logo}
               alt="logo"
               effect="blur"

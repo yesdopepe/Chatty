@@ -45,7 +45,7 @@ const ChannelForm = () => {
       admins,
       description: e.target.description.value,
       image: secureUrl,
-      isgroup: true,
+      isGroup: true,
     });
 
     if (statusCode === "201") {

@@ -41,20 +41,29 @@ const Message: FC<Props> = ({ message }) => {
         !deleted && (
           <div className="absolute hidden group-hover:block top-2 right-1 z-30 w-[98%] bg-[rgba(8,145,178,.7)] transition-all duration-200">
             {isOpen ? (
-              <div className="top-3 right-0 p-3 bg-cyan-500 shadow-xl absolute w-32 rounded-md">
-                <p className="text-xl font-semibold">Delete ?</p>
-                <button
-                  onClick={handleDelete}
-                  className="mr-5 font-medium text-lg py-2 hover:underline"
-                >
-                  Yes
-                </button>
-                <button
-                  onClick={() => setIsOpen(false)}
-                  className="py-2 font-medium text-lg hover:underline"
-                >
-                  No
-                </button>
+              <div className="absolute hidden group-hover:block top-2 right-1 z-30 w-[98%] bg-[rgba(8,145,178,.7)] transition-all duration-200">
+                {isOpen ? (
+                  <div className="top-3 right-0 p-3 bg-cyan-500 shadow-xl absolute w-32 rounded-md">
+                    <p className="text-xl font-semibold">Delete ?</p>
+                    <button
+                      onClick={handleDelete}
+                      className="mr-5 font-medium text-lg py-2 hover:underline"
+                    >
+                      Yes
+                    </button>
+                    <button
+                      onClick={() => setIsOpen(false)}
+                      className="py-2 font-medium text-lg hover:underline"
+                    >
+                      No
+                    </button>
+                  </div>
+                ) : (
+                  <HiOutlineChevronDown
+                    onClick={() => setIsOpen((prev) => !prev)}
+                    className="ml-auto text-3xl cursor-pointer"
+                  />
+                )}
               </div>
             ) : (
               <HiOutlineChevronDown

@@ -23,6 +23,7 @@ export const getChannelsByUser = async (id: string) => {
 
 export const createChannel = async (channel: any) => {
   const { data } = await axiosWithAuth.post("/channels", channel);
+  console.log(data);
   return data;
 };
 

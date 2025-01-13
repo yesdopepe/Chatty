@@ -8,6 +8,7 @@ export const getMessage = async (id: string) => {
 
 export const getMessagesByChannel = async (channelId: string) => {
   const { data } = await axiosWithAuth.get(`/messages/channel/${channelId}`);
+  console.log(data);
   return data;
 };
 
